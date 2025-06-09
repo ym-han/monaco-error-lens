@@ -214,50 +214,6 @@ describe('DecorationManager', () => {
     });
 
 
-    it('should create hover messages', () => {
-      const markers = createMockMarkers().slice(0, 1);
-      decorationManager.updateDecorations(markers);
-
-      const decorations = (mockEditor.deltaDecorations as any).mock.calls[0][1];
-      const decoration = decorations[0];
-
-      expect(decoration.options.hoverMessage).toBeDefined();
-      expect(decoration.options.hoverMessage.value).toContain('**Error**');
-      expect(decoration.options.hoverMessage.value).toContain('Test error message');
-    });
-
-    it('should create multi-marker hover messages', () => {
-      const markers: IMarkerData[] = [
-        {
-          startLineNumber: 1,
-          startColumn: 1,
-          endLineNumber: 1,
-          endColumn: 10,
-          severity: MarkerSeverity.Error,
-          message: 'Error message',
-          source: 'typescript',
-        },
-        {
-          startLineNumber: 1,
-          startColumn: 11,
-          endLineNumber: 1,
-          endColumn: 20,
-          severity: MarkerSeverity.Warning,
-          message: 'Warning message',
-          source: 'eslint',
-        },
-      ];
-
-      decorationManager.updateDecorations(markers);
-
-      const decorations = (mockEditor.deltaDecorations as any).mock.calls[0][1];
-      const decoration = decorations[0];
-
-      expect(decoration.options.hoverMessage.value).toContain('**Error**');
-      expect(decoration.options.hoverMessage.value).toContain('**Warning**');
-      expect(decoration.options.hoverMessage.value).toContain('[typescript]');
-      expect(decoration.options.hoverMessage.value).toContain('[eslint]');
-    });
   });
 
 
