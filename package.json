@@ -65,6 +65,7 @@
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui",
     "clean": "rm -rf dist",
+    "prepare": "test -d node_modules && npm run build || echo 'Skipping build'",
     "prepublishOnly": "npm run clean && npm run build && npm run check && npm run test",
     "release": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
