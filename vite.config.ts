@@ -1,7 +1,15 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import dts from 'vite-plugin-dts';
 
 export default defineConfig({
+  plugins: [
+    dts({
+      include: ['src/**/*'],
+      exclude: ['src/example.ts', 'tests/**/*'],
+      insertTypesEntry: true,
+    }),
+  ],
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
@@ -12,11 +20,11 @@ export default defineConfig({
     emptyOutDir: true,
     copyPublicDir: false,
     rollupOptions: {
-      external: ['monaco-editor'],
+      external: ['@codingame/monaco-vscode-editor-api'],
       output: {
         banner: '/* monaco-error-lens - MIT License - https://github.com/ym-han/monaco-error-lens */',
         globals: {
-          'monaco-editor': 'monaco',
+          '@codingame/monaco-vscode-editor-api': 'monaco',
         },
         assetFileNames: '[name][extname]',
       },
