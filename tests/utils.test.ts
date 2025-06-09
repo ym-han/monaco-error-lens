@@ -81,7 +81,7 @@ describe('utils', () => {
 
     it('should debounce function calls', () => {
       const mockFn = vi.fn();
-      const debouncedFn = debounce(mockFn, 100);
+      const { debouncedFn } = debounce(mockFn, 100);
 
       debouncedFn();
       debouncedFn();

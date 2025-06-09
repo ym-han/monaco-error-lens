@@ -26,6 +26,7 @@ export class MonacoErrorLens {
   private disposables: MonacoDisposable[] = [];
   private isDisposed = false;
   private updateDecorations: () => void;
+  private cancelUpdateDecorations: () => void;
 
   // Component managers
   private decorationManager: DecorationManager;
@@ -43,10 +44,12 @@ export class MonacoErrorLens {
     this.decorationManager = new DecorationManager(this.editor, this.config);
 
     // Create debounced update function
-    this.updateDecorations = debounce(
+    const { debouncedFn, cancel } = debounce(
       () => this.updateDecorationsInternal(),
       this.config.updateDelay,
     );
+    this.updateDecorations = debouncedFn;
+    this.cancelUpdateDecorations = cancel;
 
     this.initialize();
   }
@@ -382,10 +385,15 @@ export class MonacoErrorLens {
 
     // Update debounce delay if changed
     if (newOptions.updateDelay !== undefined) {
-      this.updateDecorations = debounce(
+      // Cancel existing debounced function
+      this.cancelUpdateDecorations();
+      
+      const { debouncedFn, cancel } = debounce(
         () => this.updateDecorationsInternal(),
         this.config.updateDelay,
       );
+      this.updateDecorations = debouncedFn;
+      this.cancelUpdateDecorations = cancel;
     }
 
     // Re-initialize if needed
@@ -471,6 +479,10 @@ export class MonacoErrorLens {
     if (this.isDisposed) return;
 
     this.isDisposed = true;
+    
+    // Cancel any pending debounced updates
+    this.cancelUpdateDecorations();
+    
     this.clearDecorations();
 
     // Dispose of all event listeners

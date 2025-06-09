@@ -41,19 +41,32 @@ export function formatMessage(
 
 /**
  * Debounce function for performance optimization
+ * Returns both the debounced function and a cancel method for cleanup
  */
 export function debounce<T extends (...args: unknown[]) => void>(
   func: T,
   wait: number,
-): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null;
+): { 
+  debouncedFn: (...args: Parameters<T>) => void;
+  cancel: () => void;
+} {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
 
-  return (...args: Parameters<T>) => {
+  const debouncedFn = (...args: Parameters<T>) => {
     if (timeout) {
       clearTimeout(timeout);
     }
     timeout = setTimeout(() => func(...args), wait);
   };
+
+  const cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+
+  return { debouncedFn, cancel };
 }
 
 /**
