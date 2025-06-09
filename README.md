@@ -13,12 +13,7 @@ makes diagnostics more prominent through inline messages, line highlighting, and
 - **🔍 Inline Messages** - Show diagnostic text directly at the end of problematic lines
 - **🎨 Line Highlighting** - Color entire lines containing problems with configurable backgrounds
 - **📍 Gutter Icons** - Display severity icons in the editor gutter
-- **🌙 Theme Support** - Built-in light, dark, and high-contrast themes
-- **⚡ Performance** - Debounced updates and optimized rendering
-- **♿ Accessibility** - High contrast mode and screen reader support
-- **📱 Responsive** - Mobile-friendly adaptive UI
 - **🔧 Configurable** - Extensive customization options
-- **🚀 Modern** - ESM-only, TypeScript, tree-shakeable
 
 ## Installation
 
