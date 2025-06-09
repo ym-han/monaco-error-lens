@@ -1,0 +1,76 @@
+{
+  "name": "monaco-error-lens",
+  "version": "0.1.0",
+  "description": "Error Lens for Monaco Editor: makes diagnostics more visible with inline messages, line highlighting, and gutter icons. Adapted from VSCode Error Lens.",
+  "keywords": [
+    "monaco",
+    "diagnostics",
+    "error",
+    "error-lens"
+  ],
+  "author": "Yongming Han <hanyongming@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ym-han/monaco-error-lens.git"
+  },
+  "homepage": "https://github.com/ym-han/monaco-error-lens#readme",
+  "bugs": {
+    "url": "https://github.com/ym-han/monaco-error-lens/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "peerDependencies": {
+    "monaco-editor": "^0.44.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "eslint": "^9.28.0",
+    "globals": "^15.15.0",
+    "jsdom": "^23.0.0",
+    "monaco-editor": "^0.44.0",
+    "typescript": "^5.3.2",
+    "typescript-eslint": "^8.33.1",
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "scripts": {
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "dev": "vite build --watch",
+    "check": "tsc --noEmit",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint .",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "test:ui": "vitest --ui",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build && npm run check && npm run test",
+    "release": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}
