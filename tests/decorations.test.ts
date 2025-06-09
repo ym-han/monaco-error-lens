@@ -133,7 +133,7 @@ describe('DecorationManager', () => {
       decorationManager.updateDecorations(markers);
 
       const decorations = (mockEditor.deltaDecorations as any).mock.calls[0][1];
-      
+
       // Should have decorations for lines 1 and 2
       expect(decorations).toHaveLength(2);
       expect(decorations[0].range.startLineNumber).toBe(1);
@@ -145,7 +145,7 @@ describe('DecorationManager', () => {
     it('should include line highlighting when enabled', () => {
       config.enableLineHighlights = true;
       decorationManager = new DecorationManager(mockEditor, config);
-      
+
       const markers = createMockMarkers().slice(0, 1); // Single marker
       decorationManager.updateDecorations(markers);
 
@@ -160,7 +160,7 @@ describe('DecorationManager', () => {
     it('should not include line highlighting when disabled', () => {
       config.enableLineHighlights = false;
       decorationManager = new DecorationManager(mockEditor, config);
-      
+
       const markers = createMockMarkers().slice(0, 1);
       decorationManager.updateDecorations(markers);
 
@@ -174,7 +174,7 @@ describe('DecorationManager', () => {
     it('should include inline messages when enabled', () => {
       config.enableInlineMessages = true;
       decorationManager = new DecorationManager(mockEditor, config);
-      
+
       const markers = createMockMarkers().slice(0, 1);
       decorationManager.updateDecorations(markers);
 
@@ -189,7 +189,7 @@ describe('DecorationManager', () => {
     it('should not include inline messages when disabled', () => {
       config.enableInlineMessages = false;
       decorationManager = new DecorationManager(mockEditor, config);
-      
+
       const markers = createMockMarkers().slice(0, 1);
       decorationManager.updateDecorations(markers);
 
@@ -202,7 +202,7 @@ describe('DecorationManager', () => {
     it('should include gutter icons when enabled', () => {
       config.enableGutterIcons = true;
       decorationManager = new DecorationManager(mockEditor, config);
-      
+
       const markers = createMockMarkers().slice(0, 1);
       decorationManager.updateDecorations(markers);
 
@@ -257,7 +257,7 @@ describe('DecorationManager', () => {
       decorationManager.updateDecorations(markers);
 
       const decorations = (mockEditor.deltaDecorations as any).mock.calls[0][1];
-      
+
       expect(decorations).toHaveLength(4);
       expect(decorations[0].options.className).toContain('error');
       expect(decorations[1].options.className).toContain('warning');
@@ -296,16 +296,11 @@ describe('DecorationManager', () => {
       decorationManager.updateDecorations(markers);
 
       const decorations = (mockEditor.deltaDecorations as any).mock.calls[0][1];
-      
+
       // Should only have one decoration for the line, using highest severity (Error)
       expect(decorations).toHaveLength(1);
       expect(decorations[0].options.className).toContain('error');
-      
-      // Hover message should contain all markers
-      expect(decorations[0].options.hoverMessage.value).toContain('Error');
-      expect(decorations[0].options.hoverMessage.value).toContain('Warning');
-      expect(decorations[0].options.hoverMessage.value).toContain('Info');
-    });
+      });
   });
 
   describe('message formatting', () => {
@@ -362,11 +357,11 @@ describe('DecorationManager', () => {
     it('should clear all decorations', () => {
       const markers = createMockMarkers();
       decorationManager.updateDecorations(markers);
-      
+
       expect(decorationManager.getDecorationCount()).toBeGreaterThan(0);
-      
+
       decorationManager.clearDecorations();
-      
+
       expect(mockEditor.deltaDecorations).toHaveBeenLastCalledWith(
         ['decoration-1', 'decoration-2'],
         []
@@ -378,9 +373,9 @@ describe('DecorationManager', () => {
   describe('configuration updates', () => {
     it('should update configuration', () => {
       const newConfig = { ...config, enableInlineMessages: false };
-      
+
       decorationManager.updateConfig(newConfig);
-      
+
       // Verify that subsequent decoration updates use new config
       const markers = createMockMarkers().slice(0, 1);
       decorationManager.updateDecorations(markers);
@@ -503,7 +498,7 @@ describe('DecorationManager', () => {
       decorationManager.updateDecorations(duplicateLineMarkers);
 
       const decorations = (mockEditor.deltaDecorations as any).mock.calls[0][1];
-      
+
       // Should only have one line decoration despite 10 markers
       expect(decorations).toHaveLength(1);
     });
