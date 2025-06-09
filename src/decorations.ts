@@ -126,31 +126,14 @@ export class DecorationManager {
     if (markers.length === 1) {
       const marker = markers[0];
       if (!marker) return '';
-      const source = marker.source ? ` [${marker.source}]` : '';
-      return `**${this.getSeverityLabel(marker.severity)}**${source}: ${marker.message}`;
+      return marker.message;
     }
 
-    const lines = markers.map(marker => {
-      const severity = this.getSeverityLabel(marker.severity);
-      const source = marker.source ? ` [${marker.source}]` : '';
-      return `**${severity}**${source}: ${marker.message}`;
-    });
-
+    const lines = markers.map(marker => marker.message);
     return lines.join('\n\n');
   }
 
-  /**
-   * Get human-readable severity label
-   */
-  private getSeverityLabel(severity: number): string {
-    switch (severity) {
-      case 8: return 'Error';
-      case 4: return 'Warning';
-      case 2: return 'Info';
-      case 1: return 'Hint';
-      default: return 'Unknown';
-    }
-  }
+
 
   /**
    * Group markers by line number with sorted markers per line
