@@ -1,6 +1,6 @@
 {
   "name": "@ym-han/monaco-error-lens",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Error Lens for Monaco Editor, adapted from the VSCode Error Lens extension: makes diagnostics more visible with inline messages, line highlighting, and gutter icons. WARNING: Very experimental; use with caution.",
   "keywords": [
     "monaco",
