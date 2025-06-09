@@ -37,7 +37,7 @@ const editor = monaco.editor.create(document.getElementById('container'), {
 });
 
 // Create Error Lens instance
-const errorLens = new MonacoErrorLens(editor, {
+const errorLens = new MonacoErrorLens(editor, monaco, {
   enableInlineMessages: true,
   enableLineHighlights: true,
   enableGutterIcons: true,
@@ -62,7 +62,7 @@ monaco.editor.setModelMarkers(editor.getModel(), 'typescript', [
 ```typescript
 import { MonacoErrorLens, createCustomTheme } from 'monaco-error-lens';
 
-const errorLens = new MonacoErrorLens(editor, {
+const errorLens = new MonacoErrorLens(editor, monaco, {
   enableInlineMessages: true,
   enableLineHighlights: true,
   enableGutterIcons: true,
@@ -91,13 +91,13 @@ For convenience, use the provided factory functions:
 import { setupErrorLens, createMinimalErrorLens } from 'monaco-error-lens';
 
 // Quick setup with recommended defaults
-const errorLens = setupErrorLens(editor, {
+const errorLens = setupErrorLens(editor, monaco, {
   // Optional overrides
   messageTemplate: '[{source}] {message}',
 });
 
 // Minimal setup for better performance
-const minimalErrorLens = createMinimalErrorLens(editor, {
+const minimalErrorLens = createMinimalErrorLens(editor, monaco, {
   // Only inline messages, no line highlights or gutter icons
   maxMessageLength: 80,
 });
@@ -138,7 +138,7 @@ errorLens.dispose();        // Clean up resources
 Monitor Error Lens events for advanced integrations:
 
 ```typescript
-const errorLens = new MonacoErrorLens(editor);
+const errorLens = new MonacoErrorLens(editor, monaco);
 const eventEmitter = errorLens.getEventEmitter();
 
 // Listen for decoration updates

@@ -36,7 +36,7 @@ export function basicExample(): void {
   });
 
   // Create Error Lens with default options
-  const errorLens = new MonacoErrorLens(editor);
+  const errorLens = new MonacoErrorLens(editor, monaco);
 
   // Add some sample markers to demonstrate
   monaco.editor.setModelMarkers(editor.getModel(), 'sample', [
@@ -78,7 +78,7 @@ export function customConfigExample(): void {
   });
 
   // Custom configuration
-  new MonacoErrorLens(editor, {
+  new MonacoErrorLens(editor, monaco, {
     enableInlineMessages: true,
     enableLineHighlights: true,
     enableGutterIcons: true,
@@ -126,7 +126,7 @@ export function factoryExamples(): void {
     glyphMargin: true,
   });
 
-  setupErrorLens(editor1);
+  setupErrorLens(editor1, monaco);
 
   // Using createMinimalErrorLens for performance
   const editor2 = monaco.editor.create(container, {
@@ -135,7 +135,7 @@ export function factoryExamples(): void {
     glyphMargin: true,
   });
 
-  createMinimalErrorLens(editor2);
+  createMinimalErrorLens(editor2, monaco);
 
   // Add markers to both
   const markers = [
@@ -164,7 +164,7 @@ export function dynamicConfigExample(): void {
     glyphMargin: true,
   });
 
-  const errorLens = new MonacoErrorLens(editor);
+  const errorLens = new MonacoErrorLens(editor, monaco);
 
   // Create UI controls
   const controls = document.createElement('div');

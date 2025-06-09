@@ -157,7 +157,7 @@ function processData(data: any) {
             });
 
             // Initialize Error Lens using the real package
-            errorLens = setupErrorLens(editor, {
+            errorLens = setupErrorLens(editor, monaco, {
                 enableInlineMessages: true,
                 enableLineHighlights: true,
                 enableGutterIcons: true,

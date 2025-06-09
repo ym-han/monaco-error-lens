@@ -19,6 +19,7 @@ export type {
   MonacoEditor,
   MonacoMarkerData,
   MonacoDisposable,
+  MonacoModule,
 } from './types';
 
 // Import types for internal use
@@ -70,9 +71,10 @@ export function getMonaco(): unknown | null {
  */
 export function createErrorLens(
   editor: import('./types').MonacoEditor,
+  monaco: import('./types').MonacoModule,
   options?: ErrorLensOptions,
 ): MonacoErrorLens {
-  return new MonacoErrorLens(editor, options);
+  return new MonacoErrorLens(editor, monaco, options);
 }
 
 /**
@@ -80,9 +82,10 @@ export function createErrorLens(
  */
 export function setupErrorLens(
   editor: import('./types').MonacoEditor,
+  monaco: import('./types').MonacoModule,
   options?: ErrorLensOptions,
 ): MonacoErrorLens {
-  const errorLens = new MonacoErrorLens(editor, {
+  const errorLens = new MonacoErrorLens(editor, monaco, {
     enableInlineMessages: true,
     enableLineHighlights: true,
     enableGutterIcons: true,
@@ -98,9 +101,10 @@ export function setupErrorLens(
  */
 export function createMinimalErrorLens(
   editor: import('./types').MonacoEditor,
+  monaco: import('./types').MonacoModule,
   options?: ErrorLensOptions,
 ): MonacoErrorLens {
-  return new MonacoErrorLens(editor, {
+  return new MonacoErrorLens(editor, monaco, {
     enableInlineMessages: true,
     enableLineHighlights: false,
     enableGutterIcons: false,

@@ -13,11 +13,11 @@ import {
   type IStandaloneCodeEditor,
 } from '../tests/__mocks__/monaco-editor';
 
-// Set up global monaco mock
+// Set up monaco mock
 const mockOnDidChangeMarkers = vi.fn();
 const mockGetModelMarkers = vi.fn();
 
-(global as any).monaco = {
+const mockMonaco = {
   editor: {
     onDidChangeMarkers: mockOnDidChangeMarkers.mockReturnValue({
       dispose: vi.fn(),
@@ -49,7 +49,7 @@ describe('MonacoErrorLens', () => {
 
   describe('constructor', () => {
     it('should create instance with default options', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       
       expect(errorLens).toBeInstanceOf(MonacoErrorLens);
       expect(errorLens.isActive()).toBe(true);
@@ -62,7 +62,7 @@ describe('MonacoErrorLens', () => {
         maxMessageLength: 50,
       };
 
-      const errorLens = new MonacoErrorLens(mockEditor, options);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco, options);
       const config = errorLens.getConfig();
 
       expect(config.enableInlineMessages).toBe(false);
@@ -76,7 +76,7 @@ describe('MonacoErrorLens', () => {
         enabled: false,
       };
 
-      const errorLens = new MonacoErrorLens(mockEditor, options);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco, options);
       
       expect(errorLens.isActive()).toBe(false);
     });
@@ -84,7 +84,7 @@ describe('MonacoErrorLens', () => {
 
   describe('configuration', () => {
     it('should return correct configuration', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       const config = errorLens.getConfig();
 
       expect(config.enabled).toBe(true);
@@ -94,7 +94,7 @@ describe('MonacoErrorLens', () => {
     });
 
     it('should return immutable config copy', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       const config1 = errorLens.getConfig();
       const config2 = errorLens.getConfig();
 
@@ -105,7 +105,7 @@ describe('MonacoErrorLens', () => {
 
   describe('updateOptions', () => {
     it('should update configuration options', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       
       errorLens.updateOptions({
         enableInlineMessages: false,
@@ -118,7 +118,7 @@ describe('MonacoErrorLens', () => {
     });
 
     it('should handle enabling/disabling', () => {
-      const errorLens = new MonacoErrorLens(mockEditor, { enabled: false });
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco, { enabled: false });
       expect(errorLens.isActive()).toBe(false);
       
       errorLens.updateOptions({ enabled: true });
@@ -131,7 +131,7 @@ describe('MonacoErrorLens', () => {
 
   describe('enable/disable/toggle', () => {
     it('should enable Error Lens', () => {
-      const errorLens = new MonacoErrorLens(mockEditor, { enabled: false });
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco, { enabled: false });
       
       errorLens.enable();
       
@@ -140,7 +140,7 @@ describe('MonacoErrorLens', () => {
     });
 
     it('should disable Error Lens', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       
       errorLens.disable();
       
@@ -149,7 +149,7 @@ describe('MonacoErrorLens', () => {
     });
 
     it('should toggle Error Lens on and off', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       
       const result1 = errorLens.toggle();
       expect(result1).toBe(false);
@@ -163,7 +163,7 @@ describe('MonacoErrorLens', () => {
 
   describe('refresh', () => {
     it('should force update decorations', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       const deltaDecorationsSpy = vi.spyOn(mockEditor, 'deltaDecorations');
       
       errorLens.refresh();
@@ -174,7 +174,7 @@ describe('MonacoErrorLens', () => {
 
   describe('event system', () => {
     it('should provide event emitter', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       const eventEmitter = errorLens.getEventEmitter();
       
       expect(eventEmitter).toBeDefined();
@@ -183,7 +183,7 @@ describe('MonacoErrorLens', () => {
     });
 
     it('should emit events on configuration changes', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       const eventEmitter = errorLens.getEventEmitter();
       
       const mockListener = vi.fn();
@@ -197,7 +197,7 @@ describe('MonacoErrorLens', () => {
 
   describe('dispose', () => {
     it('should dispose cleanly', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       
       expect(errorLens.isActive()).toBe(true);
       
@@ -208,7 +208,7 @@ describe('MonacoErrorLens', () => {
     });
 
     it('should be safe to call dispose multiple times', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       
       errorLens.dispose();
       errorLens.dispose(); // Should not throw

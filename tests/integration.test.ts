@@ -15,11 +15,11 @@ import {
   type IMarkerData,
 } from './__mocks__/monaco-editor';
 
-// Set up global monaco mock
+// Set up monaco mock
 const mockOnDidChangeMarkers = vi.fn();
 const mockGetModelMarkers = vi.fn();
 
-(global as any).monaco = {
+const mockMonaco = {
   editor: {
     onDidChangeMarkers: mockOnDidChangeMarkers.mockReturnValue({
       dispose: vi.fn(),
@@ -52,7 +52,7 @@ describe('Monaco Error Lens Integration', () => {
   describe('basic workflow', () => {
     it('should initialize, show diagnostics, and dispose cleanly', () => {
       // Initialize
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       expect(errorLens.isActive()).toBe(true);
 
       // Force decoration update to test functionality
@@ -65,7 +65,7 @@ describe('Monaco Error Lens Integration', () => {
     });
 
     it('should handle marker updates during operation', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       
       // Clear initial call
       vi.clearAllMocks();
@@ -98,7 +98,7 @@ describe('Monaco Error Lens Integration', () => {
         enableGutterIcons: true,
       };
 
-      const errorLens = new MonacoErrorLens(mockEditor, initialOptions);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco, initialOptions);
       
       // Verify initial config
       let config = errorLens.getConfig();
@@ -120,7 +120,7 @@ describe('Monaco Error Lens Integration', () => {
     });
 
     it('should handle enable/disable workflow', () => {
-      const errorLens = new MonacoErrorLens(mockEditor, { enabled: false });
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco, { enabled: false });
       
       // Should not be active initially
       expect(errorLens.isActive()).toBe(false);
@@ -147,7 +147,7 @@ describe('Monaco Error Lens Integration', () => {
 
   describe('event system workflow', () => {
     it('should emit events during normal operation', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       const eventEmitter = errorLens.getEventEmitter();
 
       const configListener = vi.fn();
@@ -170,7 +170,7 @@ describe('Monaco Error Lens Integration', () => {
     });
 
     it('should handle event listener lifecycle', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       const eventEmitter = errorLens.getEventEmitter();
 
       const listener = vi.fn();
@@ -227,7 +227,7 @@ describe('Monaco Error Lens Integration', () => {
       ];
 
       mockGetModelMarkers.mockReturnValue(markers);
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       
       // Force decoration update
       errorLens.refresh();
@@ -246,7 +246,7 @@ describe('Monaco Error Lens Integration', () => {
       mockGetModelMarkers.mockReturnValue(markers);
 
       // Test with all features enabled
-      const errorLens1 = new MonacoErrorLens(mockEditor, {
+      const errorLens1 = new MonacoErrorLens(mockEditor, mockMonaco, {
         enableInlineMessages: true,
         enableLineHighlights: true,
         enableGutterIcons: true,
@@ -255,7 +255,7 @@ describe('Monaco Error Lens Integration', () => {
       vi.clearAllMocks();
 
       // Test with only inline messages
-      const errorLens2 = new MonacoErrorLens(mockEditor, {
+      const errorLens2 = new MonacoErrorLens(mockEditor, mockMonaco, {
         enableInlineMessages: true,
         enableLineHighlights: false,
         enableGutterIcons: false,
@@ -277,7 +277,7 @@ describe('Monaco Error Lens Integration', () => {
       editorWithoutModel.getModel = vi.fn().mockReturnValue(null);
 
       expect(() => {
-        const errorLens = new MonacoErrorLens(editorWithoutModel);
+        const errorLens = new MonacoErrorLens(editorWithoutModel, mockMonaco);
         errorLens.refresh();
         errorLens.dispose();
       }).not.toThrow();
@@ -298,7 +298,7 @@ describe('Monaco Error Lens Integration', () => {
       mockGetModelMarkers.mockReturnValue(invalidMarkers);
 
       expect(() => {
-        const errorLens = new MonacoErrorLens(mockEditor);
+        const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
         errorLens.refresh();
       }).not.toThrow();
     });
@@ -318,7 +318,7 @@ describe('Monaco Error Lens Integration', () => {
       mockGetModelMarkers.mockReturnValue(largeMarkerSet);
 
       const startTime = performance.now();
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       errorLens.refresh();
       const endTime = performance.now();
 
@@ -329,7 +329,7 @@ describe('Monaco Error Lens Integration', () => {
     });
 
     it('should use debouncing for rapid updates', () => {
-      const errorLens = new MonacoErrorLens(mockEditor, {
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco, {
         updateDelay: 50, // Short delay for testing
       });
 
@@ -384,7 +384,7 @@ describe('Monaco Error Lens Integration', () => {
 
       mockGetModelMarkers.mockReturnValue(typicalMarkers);
       
-      const errorLens = new MonacoErrorLens(mockEditor, {
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco, {
         messageTemplate: '[{source}] {message}',
         maxMessageLength: 80,
       });
@@ -397,7 +397,7 @@ describe('Monaco Error Lens Integration', () => {
     });
 
     it('should handle editor lifecycle events', () => {
-      const errorLens = new MonacoErrorLens(mockEditor);
+      const errorLens = new MonacoErrorLens(mockEditor, mockMonaco);
       
       // Force a decoration update to test the workflow
       errorLens.refresh();

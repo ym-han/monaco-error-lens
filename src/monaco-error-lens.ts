@@ -4,6 +4,7 @@ import type {
   MonacoEditor,
   MonacoMarkerData,
   MonacoDisposable,
+  MonacoModule,
 } from './types';
 import {
   DEFAULT_OPTIONS,
@@ -22,6 +23,7 @@ import { SimpleEventEmitter } from './event-emitter';
  */
 export class MonacoErrorLens {
   private editor: MonacoEditor;
+  private monaco: MonacoModule;
   private config: ErrorLensConfig;
   private disposables: MonacoDisposable[] = [];
   private isDisposed = false;
@@ -34,9 +36,11 @@ export class MonacoErrorLens {
 
   constructor(
     editor: MonacoEditor,
+    monaco: MonacoModule,
     options: ErrorLensOptions = {},
   ) {
     this.editor = editor;
+    this.monaco = monaco;
     this.config = mergeOptions(DEFAULT_OPTIONS, options);
 
     // Initialize component managers
@@ -73,14 +77,10 @@ export class MonacoErrorLens {
    * Check if Monaco Editor is fully initialized with required APIs
    */
   private isMonacoInitialized(): boolean {
-    if (typeof window === 'undefined') return false;
-    
-    const monaco = (window as { monaco?: { editor?: { getModelMarkers?: unknown; onDidChangeMarkers?: unknown } } }).monaco;
-    
     // Check that Monaco APIs are available and editor has a model
     return !!(
-      monaco?.editor?.getModelMarkers && 
-      monaco?.editor?.onDidChangeMarkers &&
+      typeof this.monaco?.editor?.getModelMarkers === 'function' &&
+      typeof this.monaco?.editor?.onDidChangeMarkers === 'function' &&
       this.editor.getModel()
     );
   }
@@ -251,12 +251,7 @@ export class MonacoErrorLens {
     if (!this.isMonacoInitialized()) return;
 
     // Listen for marker changes
-    const monaco = (window as { monaco?: { editor?: { onDidChangeMarkers?: unknown } } }).monaco;
-    if (!monaco?.editor?.onDidChangeMarkers) return;
-
-    const markerListener = (monaco.editor.onDidChangeMarkers as (
-      callback: (resources: { toString(): string }[]) => void,
-    ) => MonacoDisposable)(
+    const markerListener = this.monaco.editor.onDidChangeMarkers(
       (resources: { toString(): string }[]) => {
         const model = this.editor.getModel();
         if (model && resources.some(resource => resource.toString() === model.uri.toString())) {
@@ -295,10 +290,7 @@ export class MonacoErrorLens {
 
     try {
       // Get current markers
-      const monaco = (window as { monaco?: { editor?: { getModelMarkers?: unknown } } }).monaco;
-      if (!monaco?.editor?.getModelMarkers) return;
-
-      const markers = (monaco.editor.getModelMarkers as (options: { resource: unknown }) => MonacoMarkerData[])({
+      const markers = this.monaco.editor.getModelMarkers({
         resource: model.uri,
       });
 
@@ -387,7 +379,7 @@ export class MonacoErrorLens {
     if (newOptions.updateDelay !== undefined) {
       // Cancel existing debounced function
       this.cancelUpdateDecorations();
-      
+
       const { debouncedFn, cancel } = debounce(
         () => this.updateDecorationsInternal(),
         this.config.updateDelay,
@@ -479,10 +471,10 @@ export class MonacoErrorLens {
     if (this.isDisposed) return;
 
     this.isDisposed = true;
-    
+
     // Cancel any pending debounced updates
     this.cancelUpdateDecorations();
-    
+
     this.clearDecorations();
 
     // Dispose of all event listeners

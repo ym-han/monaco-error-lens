@@ -46,7 +46,7 @@ export function formatMessage(
 export function debounce<T extends (...args: unknown[]) => void>(
   func: T,
   wait: number,
-): { 
+): {
   debouncedFn: (...args: Parameters<T>) => void;
   cancel: () => void;
 } {

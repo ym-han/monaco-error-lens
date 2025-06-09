@@ -1,4 +1,7 @@
 // Monaco types for compatibility
+/**
+ * API for a specific editor instance with methods to manipulate decorations, get the current model, cursor position, etc.
+ */
 export interface MonacoEditor {
   getModel(): MonacoEditorModel | null;
   getPosition(): { lineNumber: number; column: number } | null;
@@ -48,6 +51,16 @@ export interface MonacoDecorationOptions {
 
 export type MonacoMarkerSeverity = number;
 export type MonacoDisposable = { dispose(): void };
+
+/**
+ * Monaco module namespace with static APIs that work across all editors and models
+ */
+export interface MonacoModule {
+  editor: {
+    getModelMarkers(options: { resource: unknown }): MonacoMarkerData[];
+    onDidChangeMarkers(callback: (resources: { toString(): string }[]) => void): MonacoDisposable;
+  };
+}
 
 /**
  * Configuration options for Monaco Error Lens
