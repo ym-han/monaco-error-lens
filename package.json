@@ -36,7 +36,16 @@
     "CHANGELOG.md"
   ],
   "peerDependencies": {
-    "monaco-editor": "^0.44.0"
+    "monaco-editor": "^0.44.0",
+    "@codingame/monaco-vscode-editor-api": "^14.0.0"
+  },
+  "peerDependenciesMeta": {
+    "monaco-editor": {
+      "optional": true
+    },
+    "@codingame/monaco-vscode-editor-api": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^20.9.0",
@@ -72,5 +81,6 @@
   "sideEffects": false,
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "packageManager": "npm@11.0.0+sha512.11dff29565d2297c74e7c594a9762581bde969f0aa5cbe6f5b3644bf008a16c065ece61094d9ffbb81125be38df8e1ba43eb8244b3d30c61eb797e9a2440e3ec"
 }
