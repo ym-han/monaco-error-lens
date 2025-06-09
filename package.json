@@ -36,23 +36,14 @@
     "CHANGELOG.md"
   ],
   "peerDependencies": {
-    "monaco-editor": "^0.44.0",
     "@codingame/monaco-vscode-editor-api": "^14.0.0"
-  },
-  "peerDependenciesMeta": {
-    "monaco-editor": {
-      "optional": true
-    },
-    "@codingame/monaco-vscode-editor-api": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@types/node": "^20.9.0",
     "eslint": "^9.28.0",
     "globals": "^15.15.0",
     "jsdom": "^23.0.0",
-    "monaco-editor": "^0.44.0",
+    "@codingame/monaco-vscode-editor-api": "^14.0.0",
     "typescript": "^5.3.2",
     "typescript-eslint": "^8.33.1",
     "vite": "^5.0.0",
