@@ -60,8 +60,26 @@ export class MonacoErrorLens {
     this.injectStyles();
     this.setupEventListeners();
 
-    // Initial decoration update
-    this.updateDecorations();
+    // Initial decoration update - only if Monaco is fully initialized
+    if (this.isMonacoInitialized()) {
+      this.updateDecorations();
+    }
+  }
+
+  /**
+   * Check if Monaco Editor is fully initialized with required APIs
+   */
+  private isMonacoInitialized(): boolean {
+    if (typeof window === 'undefined') return false;
+    
+    const monaco = (window as { monaco?: { editor?: { getModelMarkers?: unknown; onDidChangeMarkers?: unknown } } }).monaco;
+    
+    // Check that Monaco APIs are available and editor has a model
+    return !!(
+      monaco?.editor?.getModelMarkers && 
+      monaco?.editor?.onDidChangeMarkers &&
+      this.editor.getModel()
+    );
   }
 
   /**
@@ -227,7 +245,7 @@ export class MonacoErrorLens {
    * Set up Monaco editor event listeners
    */
   private setupEventListeners(): void {
-    if (!window || !(window as { monaco?: unknown }).monaco) return;
+    if (!this.isMonacoInitialized()) return;
 
     // Listen for marker changes
     const monaco = (window as { monaco?: { editor?: { onDidChangeMarkers?: unknown } } }).monaco;
@@ -269,6 +287,8 @@ export class MonacoErrorLens {
 
     const model = this.editor.getModel();
     if (!model) return;
+
+    if (!this.isMonacoInitialized()) return;
 
     try {
       // Get current markers
