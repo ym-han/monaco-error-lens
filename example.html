@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monaco Error Lens - Working Example</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #212529;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        .editor-container {
+            height: 600px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            color: #495057;
+        }
+        .info {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            border-radius: 4px;
+        }
+        .success {
+            color: #155724;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Monaco Error Lens - Working Example</h1>
+            <div class="info">
+                <span class="success">✅ Using Real Package:</span> This example uses the actual built Monaco Error Lens package from <code>./dist/index.js</code>
+            </div>
+        </div>
+        
+        <div class="editor-container" id="editor-container"></div>
+        
+        <div class="controls">
+            <button onclick="addErrors()">Add Sample Errors</button>
+            <button onclick="addWarnings()">Add Warnings</button>
+            <button onclick="addMixed()">Add Mixed Diagnostics</button>
+            <button onclick="clearMarkers()">Clear All</button>
+            <button onclick="toggleErrorLens()">Toggle Error Lens</button>
+            <button onclick="toggleTheme()">Toggle Theme</button>
+            <button onclick="testOptions()">Test Configuration</button>
+        </div>
+        
+        <div class="status" id="status">
+            Ready - Click "Add Sample Errors" to see Error Lens in action!
+        </div>
+    </div>
+
+    <!-- Monaco Editor -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
+    
+    <script type="module">
+        // Import the actual Monaco Error Lens package
+        import { MonacoErrorLens, setupErrorLens } from './dist/index.js';
+
+        let editor, errorLens;
+        let isDarkTheme = false;
+
+        // Load Monaco Editor
+        require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            initializeEditor();
+        });
+
+        function initializeEditor() {
+            // Sample TypeScript code with intentional issues
+            const sampleCode = `// Sample TypeScript code with various issues
+function calculateTotal(items: any[]) {
+    let total = 0;
+    
+    for (const item of items) {
+        if (item.price) {
+            total += item.price;  // Missing type safety
+        }
+    }
+    
+    return total;  // Missing semicolon in some configs
+}
+
+const items = [
+    { name: "Item 1", price: 10 },
+    { name: "Item 2", price: undefined },  // Potential issue
+    { name: "Item 3" }  // Missing price property
+];
+
+const result = calculateTotal(items);
+console.log("Total:", result);
+
+// Unused variable
+const unusedVar = "This variable is never used";
+
+// Function with any type
+function processData(data: any) {
+    return data.someProperty;  // Unsafe property access
+}`;
+
+            // Create Monaco Editor
+            editor = monaco.editor.create(document.getElementById('editor-container'), {
+                value: sampleCode,
+                language: 'typescript',
+                theme: 'vs',
+                glyphMargin: true,  // Enable gutter icons
+                lineNumbers: 'on',
+                automaticLayout: true,
+                minimap: { enabled: false },
+                fontSize: 14,
+                lineHeight: 20,
+            });
+
+            // Initialize Error Lens using the real package
+            errorLens = setupErrorLens(editor, {
+                enableInlineMessages: true,
+                enableLineHighlights: true,
+                enableGutterIcons: true,
+                followCursor: 'allLines',
+                messageTemplate: '💬 {message}',
+                maxMessageLength: 100,
+                updateDelay: 150
+            });
+
+            updateStatus('Monaco Editor loaded with real Monaco Error Lens package!');
+            
+            // Expose to global scope for button handlers
+            window.errorLens = errorLens;
+            window.editor = editor;
+            window.monaco = monaco;
+            window.updateStatus = updateStatus;
+        }
+
+        function updateStatus(message) {
+            const status = document.getElementById('status');
+            const timestamp = new Date().toLocaleTimeString();
+            status.textContent = `[${timestamp}] ${message}`;
+        }
+
+        // Expose utility functions to global scope for buttons
+        window.addErrors = function() {
+            const markers = [
+                {
+                    startLineNumber: 6,
+                    startColumn: 13,
+                    endLineNumber: 6,
+                    endColumn: 28,
+                    message: "Unsafe assignment to 'total'. Variable 'item.price' could be undefined.",
+                    severity: monaco.MarkerSeverity.Error,
+                    source: 'typescript'
+                },
+                {
+                    startLineNumber: 21,
+                    startColumn: 5,
+                    endLineNumber: 21,
+                    endColumn: 24,
+                    message: "Variable 'unusedVar' is declared but never used.",
+                    severity: monaco.MarkerSeverity.Error,
+                    source: 'eslint'
+                },
+                {
+                    startLineNumber: 24,
+                    startColumn: 21,
+                    endLineNumber: 24,
+                    endColumn: 32,
+                    message: "Parameter 'data' implicitly has an 'any' type.",
+                    severity: monaco.MarkerSeverity.Error,
+                    source: 'typescript'
+                }
+            ];
+            
+            monaco.editor.setModelMarkers(editor.getModel(), 'demo', markers);
+            updateStatus(`Added ${markers.length} error markers using real Error Lens`);
+        };
+
+        window.addWarnings = function() {
+            const markers = [
+                {
+                    startLineNumber: 2,
+                    startColumn: 31,
+                    endLineNumber: 2,
+                    endColumn: 36,
+                    message: "Parameter should be typed more specifically than 'any[]'.",
+                    severity: monaco.MarkerSeverity.Warning,
+                    source: 'eslint'
+                },
+                {
+                    startLineNumber: 16,
+                    startColumn: 28,
+                    endLineNumber: 16,
+                    endColumn: 37,
+                    message: "Property 'price' is undefined for this item.",
+                    severity: monaco.MarkerSeverity.Warning,
+                    source: 'typescript'
+                },
+                {
+                    startLineNumber: 25,
+                    startColumn: 17,
+                    endLineNumber: 25,
+                    endColumn: 29,
+                    message: "Property 'someProperty' does not exist on type 'any'.",
+                    severity: monaco.MarkerSeverity.Warning,
+                    source: 'typescript'
+                }
+            ];
+            
+            monaco.editor.setModelMarkers(editor.getModel(), 'demo', markers);
+            updateStatus(`Added ${markers.length} warning markers`);
+        };
+
+        window.addMixed = function() {
+            const markers = [
+                {
+                    startLineNumber: 2,
+                    startColumn: 31,
+                    endLineNumber: 2,
+                    endColumn: 36,
+                    message: "Consider using a more specific type than 'any[]'",
+                    severity: monaco.MarkerSeverity.Info,
+                    source: 'suggestion'
+                },
+                {
+                    startLineNumber: 6,
+                    startColumn: 13,
+                    endLineNumber: 6,
+                    endColumn: 28,
+                    message: "Potential null pointer exception",
+                    severity: monaco.MarkerSeverity.Error,
+                    source: 'static-analysis'
+                },
+                {
+                    startLineNumber: 9,
+                    startColumn: 5,
+                    endLineNumber: 9,
+                    endColumn: 11,
+                    message: "Missing semicolon",
+                    severity: monaco.MarkerSeverity.Warning,
+                    source: 'eslint'
+                },
+                {
+                    startLineNumber: 12,
+                    startColumn: 1,
+                    endLineNumber: 12,
+                    endColumn: 2,
+                    message: "Add a blank line before this statement",
+                    severity: monaco.MarkerSeverity.Hint,
+                    source: 'style'
+                },
+                {
+                    startLineNumber: 21,
+                    startColumn: 7,
+                    endLineNumber: 21,
+                    endColumn: 16,
+                    message: "Variable is declared but never used",
+                    severity: monaco.MarkerSeverity.Warning,
+                    source: 'eslint'
+                }
+            ];
+            
+            monaco.editor.setModelMarkers(editor.getModel(), 'demo', markers);
+            updateStatus(`Added ${markers.length} mixed severity markers`);
+        };
+
+        window.clearMarkers = function() {
+            monaco.editor.setModelMarkers(editor.getModel(), 'demo', []);
+            updateStatus('Cleared all markers');
+        };
+
+        window.toggleErrorLens = function() {
+            const enabled = errorLens.toggle();
+            updateStatus(`Error Lens ${enabled ? 'enabled' : 'disabled'}`);
+        };
+
+        window.toggleTheme = function() {
+            isDarkTheme = !isDarkTheme;
+            monaco.editor.setTheme(isDarkTheme ? 'vs-dark' : 'vs');
+            updateStatus(`Switched to ${isDarkTheme ? 'dark' : 'light'} theme`);
+        };
+
+        window.testOptions = function() {
+            // Test different configuration options
+            errorLens.updateOptions({
+                followCursor: 'activeLine',
+                messageTemplate: '🚨 [{source}] {message}',
+                maxMessageLength: 80
+            });
+            updateStatus('Updated Error Lens configuration - now following cursor only');
+        };
+    </script>
+</body>
+</html>
