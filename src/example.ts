@@ -234,9 +234,9 @@ export function runExamples(): void {
   // dynamicConfigExample();
 }
 
-// Make examples available globally for testing
-if (typeof window !== 'undefined') {
-  (window as { MonacoErrorLensExamples?: unknown }).MonacoErrorLensExamples = {
+// Make examples available globally for testing (in browser environments)
+if (typeof globalThis !== 'undefined' && typeof globalThis.window !== 'undefined') {
+  (globalThis.window as { MonacoErrorLensExamples?: unknown }).MonacoErrorLensExamples = {
     basicExample,
     customConfigExample,
     factoryExamples,

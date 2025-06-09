@@ -54,7 +54,12 @@ describe('DecorationManager', () => {
         [],
         expect.arrayContaining([
           expect.objectContaining({
-            range: expect.any(Range),
+            range: expect.objectContaining({
+              startLineNumber: expect.any(Number),
+              startColumn: expect.any(Number),
+              endLineNumber: expect.any(Number),
+              endColumn: expect.any(Number),
+            }),
             options: expect.objectContaining({
               stickiness: 1,
             }),

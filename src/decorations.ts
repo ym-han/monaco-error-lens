@@ -4,7 +4,6 @@ import type {
   MonacoMarkerData,
   MonacoDecoration,
   MonacoDecorationOptions,
-  MonacoRange,
 } from './types';
 import { CSS_CLASSES } from './types';
 import { getSeverityClass, formatMessage } from './utils';
@@ -108,24 +107,16 @@ export class DecorationManager {
       value: this.createHoverMessage(markers),
     };
 
-    // Create range using Monaco's Range constructor if available
-    if (typeof window !== 'undefined' && (window as { monaco?: { Range?: unknown } }).monaco?.Range) {
-      const monaco = (window as { monaco?: { Range?: unknown } }).monaco;
-      if (monaco?.Range) {
-        const Range = monaco.Range as new (
-          startLine: number,
-          startCol: number,
-          endLine: number,
-          endCol: number,
-        ) => MonacoRange;
-        return {
-          range: new Range(lineNumber, 1, lineNumber, 1),
-          options,
-        };
-      }
-    }
-
-    return null;
+    // Create range using plain object (compatible with Monaco editor API)
+    return {
+      range: {
+        startLineNumber: lineNumber,
+        startColumn: 1,
+        endLineNumber: lineNumber,
+        endColumn: 1,
+      },
+      options,
+    };
   }
 
   /**
