@@ -77,9 +77,9 @@
                 <span class="success">✅ Using Real Package:</span> This example uses the actual built Monaco Error Lens package from <code>./dist/index.js</code>
             </div>
         </div>
-        
+
         <div class="editor-container" id="editor-container"></div>
-        
+
         <div class="controls">
             <button onclick="addErrors()">Add Sample Errors</button>
             <button onclick="addWarnings()">Add Warnings</button>
@@ -89,7 +89,7 @@
             <button onclick="toggleTheme()">Toggle Theme</button>
             <button onclick="testOptions()">Test Configuration</button>
         </div>
-        
+
         <div class="status" id="status">
             Ready - Click "Add Sample Errors" to see Error Lens in action!
         </div>
@@ -97,7 +97,7 @@
 
     <!-- Monaco Editor -->
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
-    
+
     <script type="module">
         // Import the actual Monaco Error Lens package
         import { MonacoErrorLens, setupErrorLens } from './dist/index.js';
@@ -116,13 +116,13 @@
             const sampleCode = `// Sample TypeScript code with various issues
 function calculateTotal(items: any[]) {
     let total = 0;
-    
+
     for (const item of items) {
         if (item.price) {
             total += item.price;  // Missing type safety
         }
     }
-    
+
     return total;  // Missing semicolon in some configs
 }
 
@@ -168,10 +168,9 @@ function processData(data: any) {
             });
 
             updateStatus('Monaco Editor loaded with real Monaco Error Lens package!');
-            
+
             // Expose to global scope for button handlers
             window.errorLens = errorLens;
-            window.editor = editor;
             window.monaco = monaco;
             window.updateStatus = updateStatus;
         }
@@ -213,7 +212,7 @@ function processData(data: any) {
                     source: 'typescript'
                 }
             ];
-            
+
             monaco.editor.setModelMarkers(editor.getModel(), 'demo', markers);
             updateStatus(`Added ${markers.length} error markers using real Error Lens`);
         };
@@ -248,7 +247,7 @@ function processData(data: any) {
                     source: 'typescript'
                 }
             ];
-            
+
             monaco.editor.setModelMarkers(editor.getModel(), 'demo', markers);
             updateStatus(`Added ${markers.length} warning markers`);
         };
@@ -301,7 +300,7 @@ function processData(data: any) {
                     source: 'eslint'
                 }
             ];
-            
+
             monaco.editor.setModelMarkers(editor.getModel(), 'demo', markers);
             updateStatus(`Added ${markers.length} mixed severity markers`);
         };
