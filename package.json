@@ -59,7 +59,7 @@
     "vitest": "^1.0.0"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && tsc --emitDeclarationOnly && cp src/styles.css dist/styles.css",
     "build:watch": "vite build --watch",
     "dev": "vite build --watch",
     "check": "tsc --noEmit",

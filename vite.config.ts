@@ -9,6 +9,8 @@ export default defineConfig({
       fileName: 'index',
       formats: ['es'],
     },
+    emptyOutDir: true,
+    copyPublicDir: false,
     rollupOptions: {
       external: ['monaco-editor'],
       output: {
@@ -16,6 +18,7 @@ export default defineConfig({
         globals: {
           'monaco-editor': 'monaco',
         },
+        assetFileNames: '[name][extname]',
       },
     },
     sourcemap: true,
