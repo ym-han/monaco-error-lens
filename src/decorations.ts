@@ -102,10 +102,6 @@ export class DecorationManager {
       options.glyphMarginClassName = `${CSS_CLASSES.GUTTER} ${CSS_CLASSES.GUTTER}-${severityClass}`;
     }
 
-    // Add hover message
-    options.hoverMessage = {
-      value: this.createHoverMessage(markers),
-    };
 
     // Create range using plain object (compatible with Monaco editor API)
     return {
@@ -119,19 +115,6 @@ export class DecorationManager {
     };
   }
 
-  /**
-   * Create hover message for multiple markers on the same line
-   */
-  private createHoverMessage(markers: MonacoMarkerData[]): string {
-    if (markers.length === 1) {
-      const marker = markers[0];
-      if (!marker) return '';
-      return marker.message;
-    }
-
-    const lines = markers.map(marker => marker.message);
-    return lines.join('\n\n');
-  }
 
 
 
